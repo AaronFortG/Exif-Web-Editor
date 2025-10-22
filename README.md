@@ -113,13 +113,18 @@ http://localhost:5000
 
 ```
 Exif-Web-Editor/
-├── app.py              # Flask application (backend)
+├── app.py                 # Flask application (backend)
 ├── templates/
-│   └── index.html      # Web interface (frontend)
-├── uploads/            # Temporary storage for uploaded images
-├── requirements.txt    # Python dependencies
-├── .gitignore         # Git ignore rules
-└── README.md          # This file
+│   └── index.html        # Web interface (frontend)
+├── uploads/              # Temporary storage for uploaded images
+├── examples/             # Example scripts and usage demonstrations
+│   ├── README.md         # Examples documentation
+│   └── example_api_usage.py  # API usage example
+├── requirements.txt      # Python dependencies
+├── .gitignore           # Git ignore rules
+├── README.md            # This file
+├── CONTRIBUTING.md      # Contribution guidelines
+└── DEPLOYMENT.md        # Production deployment guide
 ```
 
 ## Editable EXIF Fields
@@ -176,16 +181,33 @@ Contributions are welcome! This project is designed to be simple and maintainabl
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-### Ideas for Contributions
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines and ideas.
 
-- Add more EXIF fields to edit
-- Improve error handling
-- Add batch processing for multiple images
-- Add image preview with before/after comparison
-- Add support for more image formats
-- Improve UI/UX
-- Add tests
-- Add internationalization
+## Documentation
+
+- **[README.md](README.md)** - Getting started, features, installation
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - How to contribute to the project
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Production deployment guide
+- **[examples/](examples/)** - Example scripts and API usage
+
+## API Usage
+
+See the [examples directory](examples/) for detailed API usage examples. Quick example:
+
+```python
+import requests
+
+# Upload image
+with open('photo.jpg', 'rb') as f:
+    response = requests.post('http://localhost:5000/upload', files={'file': f})
+    filename = response.json()['filename']
+
+# Update EXIF
+requests.post(
+    f'http://localhost:5000/exif/{filename}',
+    json={'Artist': 'Your Name', 'Copyright': '2025'}
+)
+```
 
 ## Security Considerations
 
