@@ -31,23 +31,33 @@ def get_exif_data(filepath):
         if data:
             return data[0]
         return {}
-    except subprocess.CalledProcessError as e:
-        return {'error': f'Error reading EXIF data: {e.stderr}'}
+    except subprocess.CalledProcessError:
+        return {'error': 'Error reading EXIF data'}
     except FileNotFoundError:
         return {'error': 'exiftool not found. Please install exiftool.'}
-    except Exception as e:
-        return {'error': f'Unexpected error: {str(e)}'}
+    except Exception:
+        return {'error': 'Unexpected error occurred'}
 
 
 def update_exif_data(filepath, exif_data):
     """Update EXIF data in image using exiftool"""
     try:
+        # Whitelist of allowed EXIF tags to prevent command injection
+        allowed_tags = {
+            'Artist', 'Copyright', 'ImageDescription', 'UserComment',
+            'DateTimeOriginal', 'CreateDate', 'ModifyDate'
+        }
+        
         # Build exiftool command
         cmd = ['exiftool', '-overwrite_original']
         
         for key, value in exif_data.items():
+            # Only allow whitelisted tags
+            if key not in allowed_tags:
+                continue
             if value:  # Only update if value is not empty
-                cmd.append(f'-{key}={value}')
+                # Use key-value pairs to prevent injection
+                cmd.extend([f'-{key}={value}'])
         
         cmd.append(filepath)
         
@@ -59,10 +69,10 @@ def update_exif_data(filepath, exif_data):
         )
         
         return {'success': True, 'message': 'EXIF data updated successfully'}
-    except subprocess.CalledProcessError as e:
-        return {'success': False, 'error': f'Error updating EXIF data: {e.stderr}'}
-    except Exception as e:
-        return {'success': False, 'error': f'Unexpected error: {str(e)}'}
+    except subprocess.CalledProcessError:
+        return {'success': False, 'error': 'Error updating EXIF data'}
+    except Exception:
+        return {'success': False, 'error': 'Unexpected error occurred'}
 
 
 @app.route('/')
@@ -134,4 +144,7 @@ def download_file(filename):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Note: Set debug=False in production
+    import os
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)

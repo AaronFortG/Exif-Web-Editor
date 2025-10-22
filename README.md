@@ -82,6 +82,13 @@ mkdir -p uploads
 ## Usage
 
 1. **Start the application**
+
+For development (with debug mode):
+```bash
+FLASK_DEBUG=true python app.py
+```
+
+For production (without debug mode):
 ```bash
 python app.py
 ```
@@ -186,8 +193,13 @@ Contributions are welcome! This project is designed to be simple and maintainabl
 - Maximum file size is limited to 16MB
 - Only allowed image formats are accepted
 - Filenames are sanitized using `secure_filename`
+- EXIF tag whitelist prevents command injection attacks
+- Debug mode is disabled by default (enable with `FLASK_DEBUG=true` environment variable)
+- Error messages are sanitized to prevent information leakage
 - Consider adding authentication for production use
 - Regularly clean up the uploads directory
+- Consider deploying behind a reverse proxy (nginx, Apache) in production
+- Use HTTPS in production to protect data in transit
 
 ## Troubleshooting
 
