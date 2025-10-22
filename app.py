@@ -1,4 +1,6 @@
 import os
+import time
+from datetime import datetime
 import json
 import subprocess
 from flask import Flask, render_template, request, jsonify, send_from_directory
@@ -50,29 +52,57 @@ def update_exif_data(filepath, exif_data):
         
         # Build exiftool command
         cmd = ['exiftool', '-overwrite_original']
-        
+
         for key, value in exif_data.items():
             # Only allow whitelisted tags
             if key not in allowed_tags:
                 continue
-            if value:  # Only update if value is not empty
-                # Use key-value pairs to prevent injection
-                cmd.extend([f'-{key}={value}'])
-        
+
+            # Validate and sanitize value
+            if not value or not isinstance(value, str):
+                continue
+
+            # Limit value length to prevent abuse
+            if len(value) > 1000:
+                continue
+
+            # Remove or escape potentially dangerous characters
+            sanitized_value = value.replace('\n', ' ').replace('\r', ' ').strip()
+
+            if sanitized_value:
+                # Use separate arguments to prevent shell injection
+                cmd.extend([f'-{key}={sanitized_value}'])
+
+        # Validate filepath exists and is safe
+        if not os.path.exists(filepath) or not os.path.isfile(filepath):
+            return {'success': False, 'error': 'Invalid file path'}
+
         cmd.append(filepath)
-        
+
         result = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
-            check=True
+            check=True,
+            timeout=30  # Add timeout to prevent hanging
         )
-        
+
+        # after building cmd = ['exiftool', '-overwrite_original', ...]
+        exif_dt = exif_data.get('CreateDate') or exif_data.get('DateTimeOriginal')
+        if exif_dt:
+            # exiftool wants the same EXIF format: YYYY:MM:DD HH:MM:SS
+            cmd.extend([f'-FileCreateDate={exif_dt}',
+                        f'-FileModifyDate={exif_dt}',
+                        f'-FileAccessDate={exif_dt}'])
+
         return {'success': True, 'message': 'EXIF data updated successfully'}
-    except subprocess.CalledProcessError:
-        return {'success': False, 'error': 'Error updating EXIF data'}
-    except Exception:
-        return {'success': False, 'error': 'Unexpected error occurred'}
+
+    except subprocess.CalledProcessError as e:
+        return {'success': False, 'error': f'Error updating EXIF data: {e.stderr}'}
+    except subprocess.TimeoutExpired:
+        return {'success': False, 'error': 'Operation timed out'}
+    except Exception as e:
+        return {'success': False, 'error': f'Unexpected error: {str(e)}'}
 
 
 @app.route('/')

@@ -97,45 +97,57 @@
                         </div>
                         <div class="card-body">
                             <form id="exifForm">
-                                <div class="exif-field">
-                                    <label for="artist" class="form-label fw-bold">
-                                        <i class="bi bi-person"></i> Author/Artist
-                                    </label>
-                                    <input type="text" class="form-control" id="artist" name="Artist" 
-                                           placeholder="Enter author name">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="exif-field">
+                                            <label for="artist" class="form-label fw-bold">
+                                                <i class="bi bi-person"></i> Author/Artist
+                                            </label>
+                                            <input type="text" class="form-control" id="artist" name="Artist"
+                                                   placeholder="Enter author name">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="exif-field">
+                                            <label for="copyright" class="form-label fw-bold">
+                                                <i class="bi bi-c-circle"></i> Copyright
+                                            </label>
+                                            <input type="text" class="form-control" id="copyright" name="Copyright"
+                                                   placeholder="Enter copyright information">
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="exif-field">
-                                    <label for="copyright" class="form-label fw-bold">
-                                        <i class="bi bi-c-circle"></i> Copyright
-                                    </label>
-                                    <input type="text" class="form-control" id="copyright" name="Copyright" 
-                                           placeholder="Enter copyright information">
+                                <div class="row">
+                                    <div class="col-6"></div>
+                                        <div class="exif-field">
+                                            <label for="dateTimeOriginal" class="form-label fw-bold">
+                                                <i class="bi bi-calendar-event"></i> Date Created
+                                            </label>
+                                            <input type="datetime-local" class="form-control" id="dateTimeOriginal"
+                                                   name="DateTimeOriginal">
+                                        </div>
+                                    <div class="col-6">
+                                        <!--
+                                        <div class="exif-field">
+                                            <label for="createDate" class="form-label fw-bold">
+                                                <i class="bi bi-calendar-plus"></i> Create Date
+                                            </label>
+                                            <input type="datetime-local" class="form-control" id="createDate"
+                                                   name="CreateDate">
+                                        </div>
+                                        -->
+
+                                        <div class="exif-field">
+                                            <label for="modifyDate" class="form-label fw-bold">
+                                                <i class="bi bi-calendar-check"></i> Modify Date
+                                            </label>
+                                            <input type="datetime-local" class="form-control" id="modifyDate"
+                                                   name="ModifyDate">
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="exif-field">
-                                    <label for="dateTimeOriginal" class="form-label fw-bold">
-                                        <i class="bi bi-calendar-event"></i> Date Created
-                                    </label>
-                                    <input type="datetime-local" class="form-control" id="dateTimeOriginal" 
-                                           name="DateTimeOriginal">
-                                </div>
-
-                                <div class="exif-field">
-                                    <label for="createDate" class="form-label fw-bold">
-                                        <i class="bi bi-calendar-plus"></i> Create Date
-                                    </label>
-                                    <input type="datetime-local" class="form-control" id="createDate" 
-                                           name="CreateDate">
-                                </div>
-
-                                <div class="exif-field">
-                                    <label for="modifyDate" class="form-label fw-bold">
-                                        <i class="bi bi-calendar-check"></i> Modify Date
-                                    </label>
-                                    <input type="datetime-local" class="form-control" id="modifyDate" 
-                                           name="ModifyDate">
-                                </div>
 
                                 <div class="exif-field">
                                     <label for="imageDescription" class="form-label fw-bold">
@@ -288,9 +300,11 @@
             if (exif.DateTimeOriginal) {
                 document.getElementById('dateTimeOriginal').value = exifDateToInput(exif.DateTimeOriginal);
             }
+            /*
             if (exif.CreateDate) {
                 document.getElementById('createDate').value = exifDateToInput(exif.CreateDate);
             }
+            */
             if (exif.ModifyDate) {
                 document.getElementById('modifyDate').value = exifDateToInput(exif.ModifyDate);
             }
