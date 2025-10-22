@@ -28,5 +28,14 @@ Thumbs.db
 uploads/*
 !uploads/.gitkeep
 
+# Test/example images in root
+*.jpg
+*.jpeg
+*.png
+*.tiff
+*.tif
+*.gif
+*.bmp
+
 # Logs
 *.log
