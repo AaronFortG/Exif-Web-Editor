@@ -74,6 +74,15 @@ Exif-Web-Editor/
 - `POST /api/update` - Update EXIF metadata
 - `GET /api/download/:filename` - Download the modified image
 
+## Security
+
+This application implements several security measures:
+
+- **Rate Limiting**: API endpoints are rate-limited to prevent abuse (100 requests per 15 minutes per IP)
+- **Path Traversal Protection**: File paths are validated to prevent directory traversal attacks
+- **File Type Validation**: Only image files are accepted for upload
+- **Input Sanitization**: Filenames are sanitized and validated before use
+
 ## Contributing
 
 Contributions are welcome! This project uses simple, well-maintained technologies to make it easy for everyone to contribute.
