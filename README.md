@@ -95,7 +95,7 @@ python app.py
 
 2. **Open your browser** and navigate to:
 ```
-http://localhost:5000
+http://localhost:8000
 ```
 
 3. **Upload an image**
@@ -199,12 +199,12 @@ import requests
 
 # Upload image
 with open('photo.jpg', 'rb') as f:
-    response = requests.post('http://localhost:5000/upload', files={'file': f})
+    response = requests.post('http://localhost:8000/upload', files={'file': f})
     filename = response.json()['filename']
 
 # Update EXIF
 requests.post(
-    f'http://localhost:5000/exif/{filename}',
+    f'http://localhost:8000/exif/{filename}',
     json={'Artist': 'Your Name', 'Copyright': '2025'}
 )
 ```
@@ -234,8 +234,8 @@ requests.post(
 - Check file permissions
 
 ### Port already in use
-- Change the port in `app.py` (default is 5000)
-- Or stop the process using port 5000
+- Change the port in `app.py` (default is 8000)
+- Or stop the process using port 8000
 
 ## License
 

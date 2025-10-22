@@ -92,7 +92,7 @@ import requests
 
 # Upload an image
 with open('photo.jpg', 'rb') as f:
-    response = requests.post('http://localhost:5000/upload', files={'file': f})
+    response = requests.post('http://localhost:8000/upload', files={'file': f})
     data = response.json()
     filename = data['filename']
 
@@ -102,13 +102,13 @@ updates = {
     'Copyright': 'Copyright 2025'
 }
 requests.post(
-    f'http://localhost:5000/exif/{filename}',
+    f'http://localhost:8000/exif/{filename}',
     json=updates,
     headers={'Content-Type': 'application/json'}
 )
 
 # Download modified image
-response = requests.get(f'http://localhost:5000/download/{filename}')
+response = requests.get(f'http://localhost:8000/download/{filename}')
 with open('modified_photo.jpg', 'wb') as f:
     f.write(response.content)
 ```
@@ -117,24 +117,24 @@ with open('modified_photo.jpg', 'wb') as f:
 
 Upload an image:
 ```bash
-curl -X POST -F "file=@image.jpg" http://localhost:5000/upload
+curl -X POST -F "file=@image.jpg" http://localhost:8000/upload
 ```
 
 Get EXIF data:
 ```bash
-curl http://localhost:5000/exif/image.jpg
+curl http://localhost:8000/exif/image.jpg
 ```
 
 Update EXIF data:
 ```bash
-curl -X POST http://localhost:5000/exif/image.jpg \
+curl -X POST http://localhost:8000/exif/image.jpg \
   -H "Content-Type: application/json" \
   -d '{"Artist": "John Doe", "Copyright": "2025"}'
 ```
 
 Download image:
 ```bash
-curl -o modified_image.jpg http://localhost:5000/download/image.jpg
+curl -o modified_image.jpg http://localhost:8000/download/image.jpg
 ```
 
 ### JavaScript/Node.js Example
@@ -149,14 +149,14 @@ async function updateImageExif(imagePath) {
     const formData = new FormData();
     formData.append('file', fs.createReadStream(imagePath));
     
-    const uploadResponse = await fetch('http://localhost:5000/upload', {
+    const uploadResponse = await fetch('http://localhost:8000/upload', {
         method: 'POST',
         body: formData
     });
     const { filename } = await uploadResponse.json();
     
     // Update EXIF
-    await fetch(`http://localhost:5000/exif/${filename}`, {
+    await fetch(`http://localhost:8000/exif/${filename}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -166,7 +166,7 @@ async function updateImageExif(imagePath) {
     });
     
     // Download
-    const downloadResponse = await fetch(`http://localhost:5000/download/${filename}`);
+    const downloadResponse = await fetch(`http://localhost:8000/download/${filename}`);
     const buffer = await downloadResponse.buffer();
     fs.writeFileSync('modified_image.jpg', buffer);
 }

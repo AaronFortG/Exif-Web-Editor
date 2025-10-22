@@ -19,7 +19,7 @@ import sys
 import os
 
 # Configuration
-API_BASE_URL = "http://localhost:5000"
+API_BASE_URL = "http://localhost:8000"
 
 
 def upload_image(filepath):

@@ -13,12 +13,12 @@ pip install gunicorn
 
 2. **Run with Gunicorn**
 ```bash
-gunicorn -w 4 -b 0.0.0.0:5000 app:app
+gunicorn -w 4 -b 0.0.0.0:8000 app:app
 ```
 
 Options:
 - `-w 4`: Use 4 worker processes
-- `-b 0.0.0.0:5000`: Bind to all interfaces on port 5000
+- `-b 0.0.0.0:8000`: Bind to all interfaces on port 8000
 - Adjust worker count based on your server's CPU cores
 
 3. **Create a systemd service** (Linux)
@@ -34,7 +34,7 @@ User=www-data
 Group=www-data
 WorkingDirectory=/path/to/Exif-Web-Editor
 Environment="PATH=/path/to/Exif-Web-Editor/venv/bin"
-ExecStart=/path/to/Exif-Web-Editor/venv/bin/gunicorn -w 4 -b 127.0.0.1:5000 app:app
+ExecStart=/path/to/Exif-Web-Editor/venv/bin/gunicorn -w 4 -b 127.0.0.1:8000 app:app
 
 [Install]
 WantedBy=multi-user.target
@@ -59,7 +59,7 @@ from waitress import serve
 from app import app
 
 if __name__ == '__main__':
-    serve(app, host='0.0.0.0', port=5000, threads=4)
+    serve(app, host='0.0.0.0', port=8000, threads=4)
 ```
 
 3. **Run the production server**
@@ -87,15 +87,15 @@ COPY . .
 
 RUN mkdir -p uploads
 
-EXPOSE 5000
+EXPOSE 8000
 
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "app:app"]
 ```
 
 2. **Build and run**
 ```bash
 docker build -t exif-editor .
-docker run -d -p 5000:5000 -v $(pwd)/uploads:/app/uploads exif-editor
+docker run -d -p 8000:8000 -v $(pwd)/uploads:/app/uploads exif-editor
 ```
 
 ## Nginx Reverse Proxy Setup
@@ -116,7 +116,7 @@ server {
     client_max_body_size 16M;
 
     location / {
-        proxy_pass http://127.0.0.1:5000;
+        proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -216,7 +216,7 @@ Add to crontab:
 ## Troubleshooting
 
 ### Application won't start
-- Check if port 5000 is already in use: `sudo lsof -i :5000`
+- Check if port 8000 is already in use: `sudo lsof -i :8000`
 - Verify exiftool is installed: `exiftool -ver`
 - Check file permissions on uploads directory
 
