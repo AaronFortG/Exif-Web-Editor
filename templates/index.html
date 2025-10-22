@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXIF Web Editor</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+        }
+        .drop-zone {
+            border: 3px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: white;
+        }
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: #0d6efd;
+            background-color: #e7f1ff;
+        }
+        .exif-editor {
+            display: none;
+        }
+        .exif-field {
+            margin-bottom: 1rem;
+        }
+        .card {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn-group-custom {
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container main-container">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1 class="display-4">
+                <i class="bi bi-image"></i> EXIF Web Editor
+            </h1>
+            <p class="lead text-muted">Edit image metadata with ease</p>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="card mb-4" id="uploadSection">
+            <div class="card-body">
+                <div class="drop-zone" id="dropZone">
+                    <i class="bi bi-cloud-upload display-1 text-muted"></i>
+                    <h4 class="mt-3">Drag & Drop Your Image Here</h4>
+                    <p class="text-muted">or click to browse</p>
+                    <p class="small text-muted">Supported formats: JPG, PNG, TIFF, GIF, BMP</p>
+                    <input type="file" id="fileInput" class="d-none" accept="image/*">
+                </div>
+                <div id="uploadProgress" class="mt-3 d-none">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 100%"></div>
+                    </div>
+                    <p class="text-center mt-2 text-muted">Processing...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXIF Editor Section -->
+        <div class="exif-editor" id="exifEditor">
+            <div class="row">
+                <!-- Image Preview -->
+                <div class="col-md-5 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="bi bi-image"></i> Image Preview</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <img id="imagePreview" src="" alt="Preview" class="img-fluid rounded" style="max-height: 400px;">
+                            <p class="mt-3 mb-0 text-muted small" id="filename"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EXIF Data Editor -->
+                <div class="col-md-7">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="bi bi-pencil-square"></i> Edit EXIF Data</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="exifForm">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="exif-field">
+                                            <label for="artist" class="form-label fw-bold">
+                                                <i class="bi bi-person"></i> Author/Artist
+                                            </label>
+                                            <input type="text" class="form-control" id="artist" name="Artist"
+                                                   placeholder="Enter author name">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="exif-field">
+                                            <label for="copyright" class="form-label fw-bold">
+                                                <i class="bi bi-c-circle"></i> Copyright
+                                            </label>
+                                            <input type="text" class="form-control" id="copyright" name="Copyright"
+                                                   placeholder="Enter copyright information">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="exif-field">
+                                            <label for="dateTimeOriginal" class="form-label fw-bold">
+                                                <i class="bi bi-calendar-event"></i> Date Created
+                                            </label>
+                                            <input type="datetime-local" class="form-control" id="dateTimeOriginal"
+                                                   name="DateTimeOriginal">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <!--
+                                        <div class="exif-field">
+                                            <label for="createDate" class="form-label fw-bold">
+                                                <i class="bi bi-calendar-plus"></i> Create Date
+                                            </label>
+                                            <input type="datetime-local" class="form-control" id="createDate"
+                                                   name="CreateDate">
+                                        </div>
+                                        -->
+
+                                        <div class="exif-field">
+                                            <label for="modifyDate" class="form-label fw-bold">
+                                                <i class="bi bi-calendar-check"></i> Modify Date
+                                            </label>
+                                            <input type="datetime-local" class="form-control" id="modifyDate"
+                                                   name="ModifyDate">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="exif-field">
+                                    <label for="imageDescription" class="form-label fw-bold">
+                                        <i class="bi bi-card-text"></i> Description
+                                    </label>
+                                    <textarea class="form-control" id="imageDescription" name="ImageDescription" 
+                                              rows="3" placeholder="Enter image description"></textarea>
+                                </div>
+
+                                <div class="exif-field">
+                                    <label for="userComment" class="form-label fw-bold">
+                                        <i class="bi bi-chat-left-text"></i> Comment
+                                    </label>
+                                    <textarea class="form-control" id="userComment" name="UserComment" 
+                                              rows="2" placeholder="Enter comment"></textarea>
+                                </div>
+
+                                <hr>
+
+                                <div class="d-flex justify-content-between btn-group-custom">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-save"></i> Save Changes
+                                    </button>
+                                    <button type="button" class="btn btn-success" id="downloadBtn">
+                                        <i class="bi bi-download"></i> Download
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" id="newFileBtn">
+                                        <i class="bi bi-arrow-left"></i> New File
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full EXIF Data View -->
+            <div class="card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle"></i> All EXIF Data
+                        <button class="btn btn-sm btn-light float-end" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#allExifData">
+                            Toggle
+                        </button>
+                    </h5>
+                </div>
+                <div class="collapse" id="allExifData">
+                    <div class="card-body">
+                        <pre id="fullExifData" class="mb-0" style="max-height: 400px; overflow-y: auto;"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Area -->
+        <div id="alertArea" class="mt-3"></div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let currentFilename = '';
+
+        // Elements
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const uploadSection = document.getElementById('uploadSection');
+        const exifEditor = document.getElementById('exifEditor');
+        const exifForm = document.getElementById('exifForm');
+        const imagePreview = document.getElementById('imagePreview');
+        const filenameDisplay = document.getElementById('filename');
+        const fullExifData = document.getElementById('fullExifData');
+        const alertArea = document.getElementById('alertArea');
+
+        // Click to upload
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop handlers
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        // Handle file upload
+        async function handleFileUpload(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            uploadProgress.classList.remove('d-none');
+            
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentFilename = data.filename;
+                    displayExifData(data.exif);
+                    imagePreview.src = URL.createObjectURL(file);
+                    filenameDisplay.textContent = data.filename;
+                    
+                    uploadSection.style.display = 'none';
+                    exifEditor.style.display = 'block';
+                    showAlert('File uploaded successfully!', 'success');
+                } else {
+                    showAlert(data.error || 'Error uploading file', 'danger');
+                }
+            } catch (error) {
+                showAlert('Error uploading file: ' + error.message, 'danger');
+            } finally {
+                uploadProgress.classList.add('d-none');
+            }
+        }
+
+        // Display EXIF data in form
+        function displayExifData(exif) {
+            // Populate editable fields
+            document.getElementById('artist').value = exif.Artist || '';
+            document.getElementById('copyright').value = exif.Copyright || '';
+            document.getElementById('imageDescription').value = exif.ImageDescription || '';
+            document.getElementById('userComment').value = exif.UserComment || '';
+            
+            // Handle dates (convert from EXIF format to datetime-local)
+            if (exif.DateTimeOriginal) {
+                document.getElementById('dateTimeOriginal').value = exifDateToInput(exif.DateTimeOriginal);
+            }
+            /*
+            if (exif.CreateDate) {
+                document.getElementById('createDate').value = exifDateToInput(exif.CreateDate);
+            }
+            */
+            if (exif.ModifyDate) {
+                document.getElementById('modifyDate').value = exifDateToInput(exif.ModifyDate);
+            }
+
+            // Display full EXIF data
+            fullExifData.textContent = JSON.stringify(exif, null, 2);
+        }
+
+        // Convert EXIF date format to datetime-local input format
+        function exifDateToInput(exifDate) {
+            // EXIF format: "2023:10:22 14:30:45" or "2023-10-22 14:30:45"
+            const cleaned = exifDate.replace(/:/g, '-').substring(0, 19).replace(' ', 'T');
+            return cleaned;
+        }
+
+        // Convert datetime-local input to EXIF format
+        function inputToExifDate(inputDate) {
+            // Input format: "2023-10-22T14:30"
+            // EXIF format: "2023:10:22 14:30:45"
+            if (!inputDate) return '';
+            const formatted = inputDate.replace('T', ' ').replace(/-/g, ':');
+            // Add seconds if not present
+            return formatted.length === 16 ? formatted + ':00' : formatted;
+        }
+
+        // Save EXIF changes
+        exifForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const exifData = {
+                Artist: document.getElementById('artist').value,
+                Copyright: document.getElementById('copyright').value,
+                ImageDescription: document.getElementById('imageDescription').value,
+                UserComment: document.getElementById('userComment').value,
+                DateTimeOriginal: inputToExifDate(document.getElementById('dateTimeOriginal').value),
+                //CreateDate: inputToExifDate(document.getElementById('createDate').value),
+                ModifyDate: inputToExifDate(document.getElementById('modifyDate').value)
+            };
+
+            try {
+                const response = await fetch(`/exif/${currentFilename}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(exifData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('EXIF data updated successfully!', 'success');
+                    // Refresh the full EXIF data display
+                    refreshExifData();
+                } else {
+                    showAlert(result.error || 'Error updating EXIF data', 'danger');
+                }
+            } catch (error) {
+                showAlert('Error updating EXIF data: ' + error.message, 'danger');
+            }
+        });
+
+        // Refresh EXIF data display
+        async function refreshExifData() {
+            try {
+                const response = await fetch(`/exif/${currentFilename}`);
+                const exif = await response.json();
+                fullExifData.textContent = JSON.stringify(exif, null, 2);
+            } catch (error) {
+                console.error('Error refreshing EXIF data:', error);
+            }
+        }
+
+        // Download button
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            window.location.href = `/download/${currentFilename}`;
+        });
+
+        // New file button
+        document.getElementById('newFileBtn').addEventListener('click', () => {
+            uploadSection.style.display = 'block';
+            exifEditor.style.display = 'none';
+            fileInput.value = '';
+            exifForm.reset();
+            currentFilename = '';
+        });
+
+        // Show alert
+        function showAlert(message, type) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            alertArea.innerHTML = '';
+            alertArea.appendChild(alert);
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => alert.remove(), 150);
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

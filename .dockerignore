@@ -1,0 +1,21 @@
+# Git files
+.git
+.gitignore
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment (if you have one)
+venv/
+.venv/
+
+# Unneeded docs and examples
+README.md
+CONTRIBUTING.md
+DEPLOYMENT.md
+examples/
+
+# Dockerfile itself
+Dockerfile
+.dockerignore

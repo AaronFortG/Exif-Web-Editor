@@ -1,0 +1,25 @@
+services:
+  # This is the name of your service (you can call it anything)
+  web:
+    # 'build: .' tells Docker Compose to look for a Dockerfile
+    # in the current directory ('.') and build it.
+    build: .
+
+    container_name: 'exif-web-editor'
+
+    # This is the magic part!
+    ports:
+      # Format: "HOST_PORT:CONTAINER_PORT"
+      - "8080:8000"
+
+    volumes:
+      # This links a folder on your host PC to the container's
+      # /app/uploads folder, so your uploads are saved.
+      - ./local_uploads:/app/uploads
+
+    # Restarts the container automatically if it crashes
+    restart: unless-stopped
+
+volumes:
+  local_uploads:
+    # This just ensures the 'local_uploads' volume is managed by Docker
