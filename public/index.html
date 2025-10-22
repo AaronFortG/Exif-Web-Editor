@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXIF Web Editor</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container py-5">
+        <header class="text-center mb-5">
+            <h1 class="display-4">EXIF Web Editor</h1>
+            <p class="lead text-muted">Edit image metadata easily with ExifTool</p>
+        </header>
+
+        <!-- Upload Section -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="card-title h4 mb-3">Upload Image</h2>
+                <form id="uploadForm">
+                    <div class="mb-3">
+                        <label for="imageFile" class="form-label">Select an image file (JPEG, PNG, TIFF, etc.)</label>
+                        <input class="form-control" type="file" id="imageFile" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <span id="uploadSpinner" class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
+                        Upload & Read EXIF
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <!-- EXIF Data Display and Edit Section -->
+        <div id="exifSection" class="d-none">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="card-title h4 mb-3">Image Information</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>File Name:</strong> <span id="fileName"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>File Size:</strong> <span id="fileSize"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Dimensions:</strong> <span id="dimensions"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Camera:</strong> <span id="camera"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="card-title h4 mb-3">Edit EXIF Metadata</h2>
+                    <form id="exifForm">
+                        <div class="mb-3">
+                            <label for="artist" class="form-label">Artist / Author</label>
+                            <input type="text" class="form-control" id="artist" placeholder="Enter artist name">
+                            <div class="form-text">The person who created the image</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="copyright" class="form-label">Copyright</label>
+                            <input type="text" class="form-control" id="copyright" placeholder="Enter copyright information">
+                            <div class="form-text">Copyright notice for the image</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Image Description</label>
+                            <textarea class="form-control" id="description" rows="3" placeholder="Enter image description"></textarea>
+                            <div class="form-text">A brief description of the image content</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Original Dates (Read-only)</label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <small class="text-muted">Date Taken:</small>
+                                    <p id="dateTaken" class="mb-0">-</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <small class="text-muted">Create Date:</small>
+                                    <p id="createDate" class="mb-0">-</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <small class="text-muted">Modify Date:</small>
+                                    <p id="modifyDate" class="mb-0">-</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <span id="saveSpinner" class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
+                                Save Changes
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="downloadBtn">Download Image</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
