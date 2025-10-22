@@ -3,9 +3,17 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { exiftool } = require('exiftool-vendored');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Rate limiter for API endpoints
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: 'Too many requests from this IP, please try again later.'
+});
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -40,6 +48,30 @@ const upload = multer({
     }
 });
 
+// Helper function to safely validate and resolve file paths
+function getSafeFilePath(filename) {
+    if (!filename || typeof filename !== 'string') {
+        return null;
+    }
+    
+    // Remove any path traversal attempts
+    const safeName = path.basename(filename);
+    
+    // Ensure the filename matches our upload pattern (timestamp-random-originalname)
+    if (!/^\d+-\d+-/.test(safeName)) {
+        return null;
+    }
+    
+    const filePath = path.join(uploadsDir, safeName);
+    
+    // Verify the resolved path is actually within the uploads directory
+    if (!filePath.startsWith(uploadsDir)) {
+        return null;
+    }
+    
+    return filePath;
+}
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -48,7 +80,7 @@ app.use(express.static('public'));
 // API Routes
 
 // Upload and read EXIF data
-app.post('/api/upload', upload.single('image'), async (req, res) => {
+app.post('/api/upload', apiLimiter, upload.single('image'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
@@ -83,7 +115,7 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
 });
 
 // Update EXIF data
-app.post('/api/update', async (req, res) => {
+app.post('/api/update', apiLimiter, async (req, res) => {
     try {
         const { filename, metadata } = req.body;
         
@@ -91,7 +123,11 @@ app.post('/api/update', async (req, res) => {
             return res.status(400).json({ error: 'Filename is required' });
         }
 
-        const filePath = path.join(uploadsDir, filename);
+        const filePath = getSafeFilePath(filename);
+        
+        if (!filePath) {
+            return res.status(400).json({ error: 'Invalid filename' });
+        }
         
         if (!fs.existsSync(filePath)) {
             return res.status(404).json({ error: 'File not found' });
@@ -117,9 +153,13 @@ app.post('/api/update', async (req, res) => {
 });
 
 // Download file
-app.get('/api/download/:filename', (req, res) => {
+app.get('/api/download/:filename', apiLimiter, (req, res) => {
     const filename = req.params.filename;
-    const filePath = path.join(uploadsDir, filename);
+    const filePath = getSafeFilePath(filename);
+    
+    if (!filePath) {
+        return res.status(400).json({ error: 'Invalid filename' });
+    }
     
     if (!fs.existsSync(filePath)) {
         return res.status(404).json({ error: 'File not found' });
